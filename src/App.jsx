@@ -177,6 +177,14 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         setInputValue({...inputValue, [sectionKey]: updatedSection});
     }
 
+    const onChangeSection = (array, sectionKey, item, key, e) => {
+        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        let newArray = [...array];
+        let index = newArray.indexOf(item);
+        newArray[index][key] = value;
+        setInputValue({...inputValue, [sectionKey]: newArray});
+    }
+
     const [editItem, setEditItem] = useState({index: null, value: null});
     const [state, setState] = useState("none");
     const [currentInput, setCurrentInput] = useState("");
@@ -184,10 +192,105 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
     const editContent = (index, value, state) => {
         setEditItem({index: index, value: value});
         setState(state);
-        setCurrentInput(value);
-        if (state === "add") {
-            setCurrentInput("");
+        setCurrentInput(state === "add" ? "" : value);
+    }
+
+    const meta = {
+        DateOfBirth: "date",
+        dateFrom: "date",
+        dateTo: "date",
+        isActive: "checkbox",
+        phoneNumber: "tel",
+        email: "email",
+    }
+
+    const renderData = (sectionKey, value, key, onChange, placeholders, meta) => {
+        const isTextArea = key === "personalSummary";
+        const isLanguage = key === "languages";
+        const isSkill = key === "skills";
+
+        if (sectionKey === "education" && value.isActive && key === "dateTo") return null;
+
+        if (isTextArea) {
+            return (
+                <>
+                    <label htmlFor={key}>{placeholders}</label>
+                    <textarea
+                        id={key}
+                        value={value[key]}
+                        placeholder={"Write your " + placeholders.toLowerCase()}
+                        onChange={onChange}
+                    />
+                </>
+            );
         }
+
+        if (meta[key] === 'checkbox') {
+            return (
+                <>
+                    <label htmlFor={key}>{placeholders}</label>
+                    <input
+                        id={key}
+                        type={meta[key]}
+                        checked={value[key]}
+                        onChange={onChange}
+                    />
+                </>
+            );
+        }
+
+        if (isLanguage || isSkill) {
+            return (
+                <>
+                    <label htmlFor={key}>{placeholders}</label>
+                    <button onClick={() => editContent(null, null, "add")}>Add New</button>
+                    {value[key].map((item, index) => (
+                        editItem.index === index && editItem.value === item && state === "edit" ? (
+                            <div key={index}>
+                                <input
+                                    id={key}
+                                    type="text"
+                                    value={currentInput}
+                                    onChange={(e) => setCurrentInput(e.target.value)}
+                                />
+                                <button onClick={() => saveEdit(currentInput, key, index)}>Save</button>
+                                <button onClick={cancelEdit}>Cancel</button>
+                            </div>
+                        ) : (
+                            <div onClick={() => editContent(index, item, "edit")} key={item}>
+                                <h4>{item}</h4>
+                                <button onClick={() => deleteContent(index, key)}>Delete</button>
+                            </div>
+                        )
+                    ))}
+                    {state === "add" && (
+                        <div key="additem">
+                            <input
+                                id="additem"
+                                type="text"
+                                value={currentInput}
+                                onChange={(e) => setCurrentInput(e.target.value)}
+                            />
+                            <button onClick={() => AddNewContent(currentInput, key)}>Add</button>
+                            <button onClick={cancelEdit}>Cancel</button>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        return (
+            <>
+                <label htmlFor={key}>{placeholders}</label>
+                <input
+                    id={key}
+                    type={meta[key] || "text"}
+                    value={value[key]}
+                    placeholder={"Write your " + placeholders.toLowerCase()}
+                    onChange={onChange}
+                />
+            </>
+        );
     }
 
     const deleteContent = (index, key) => {
@@ -195,7 +298,6 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         newArr.splice(index, 1);
         const updatedSection = {...inputValue[sectionKey], [key]: newArr};
         setInputValue({...inputValue, [sectionKey]: updatedSection});
-
     }
 
     const cancelEdit = () => {
@@ -209,8 +311,8 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         const updatedSection = {...inputValue[sectionKey], [key]: newArr};
         setInputValue({...inputValue, [sectionKey]: updatedSection});
         cancelEdit();
-
     }
+
     const saveEdit = (value, key, index) => {
         let newArr = [...inputValue[sectionKey][key]];
         newArr[index] = value;
@@ -219,194 +321,26 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         cancelEdit();
     }
 
-
     return (
         <>
             <h1>{title}</h1>
-            {sectionKey === "education" || sectionKey === "experience" ? (
-                    inputValue[sectionKey].map((item, index) => {
-                        return (
-                            <div key={index}>
-                                {
-                                    Object.keys(item).map((key) => {
-                                        const hideDateTo = sectionKey === "education" && item.isActive && key === "dateTo";
-                                        const isCheckbox = key === "isActive";
-                                        const isDateField = ["DateOfBirth", "dateFrom", "dateTo"].includes(key);
-                                        const isTextArea = key === "personalSummary";
-                                        const isLanguage = key === "languages";
-                                        const isSkill = key === "skills";
-
-                                        return (
-                                            <>
-                                                {hideDateTo ? null : (
-                                                    <>
-                                                        <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
-                                                        {isDateField ? (
-                                                            <input id={key} type="date" value={item[key]}
-                                                                   onChange={(e) => onChange(e, key)}/>
-                                                        ) : isCheckbox ? (
-                                                            <input id={key} type="checkbox" checked={item[key]}
-                                                                   onChange={(e) => onChange(e, key)}/>
-                                                        ) : isTextArea ? (
-                                                                <textarea id={key} value={item[key]}
-                                                                          placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                                                          onChange={(e) => onChange(e, key)}></textarea>)
-                                                            : isLanguage || isSkill ? (
-                                                                    <>
-                                                                        <button
-                                                                            onClick={() => editContent(null, null, "add")}>Add
-                                                                            New
-                                                                        </button>
-                                                                        {item[key].map((item, index) => (
-                                                                            editItem.index === index && editItem.value === item && state === "edit" ?
-                                                                                (
-                                                                                    <div key={index}>
-                                                                                        <input
-                                                                                            id={key}
-                                                                                            type="text"
-                                                                                            value={currentInput}
-                                                                                            onChange={(e) => setCurrentInput(e.target.value)}
-                                                                                        ></input>
-                                                                                        <button
-                                                                                            onClick={() => saveEdit(currentInput, key, index)}>Save
-                                                                                        </button>
-                                                                                        <button onClick={cancelEdit}>Cansel
-                                                                                        </button>
-                                                                                    </div>
-                                                                                )
-                                                                                : (<div
-                                                                                    onClick={() => editContent(index, item, "edit")}>
-                                                                                    <h4 key={item}>{item}</h4>
-                                                                                    <button
-                                                                                        onClick={() => deleteContent(index, key)}>Delete
-                                                                                    </button>
-                                                                                </div>)
-                                                                        ))}
-                                                                        {state === "add" ? (
-                                                                            <>
-                                                                                <div key="additem">
-                                                                                    <input
-                                                                                        id="additem"
-                                                                                        type="text"
-                                                                                        value={currentInput}
-                                                                                        onChange={(e) => setCurrentInput(e.target.value)}
-                                                                                    ></input>
-                                                                                    <button
-                                                                                        onClick={() => AddNewContent(currentInput, key)}>Add
-                                                                                    </button>
-                                                                                    <button onClick={cancelEdit}>Cansel</button>
-                                                                                </div>
-                                                                            </>
-                                                                        ) : null}
-                                                                    </>)
-                                                                : (
-                                                                    <input
-                                                                        id={key}
-                                                                        type="text"
-                                                                        value={item[key]}
-                                                                        placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                                                        onChange={(e) => onChange(e, key)}
-                                                                    />
-                                                                )}
-                                                    </>
-                                                )}
-                                            </>
-
-                                        )
-
-                                    })}
-                            </div>
-                        )
-
-                    })
-
-                ) :
-                (Object.keys(inputValue[sectionKey]).map((key) => {
-                        const hideDateTo = sectionKey === "education" && inputValue[sectionKey].isActive && key === "dateTo";
-                        const isCheckbox = key === "isActive";
-                        const isDateField = ["DateOfBirth", "dateFrom", "dateTo"].includes(key);
-                        const isTextArea = key === "personalSummary";
-                        const isLanguage = key === "languages";
-                        const isSkill = key === "skills";
-
-                        return (
-                            <>
-                                {hideDateTo ? null : (
-                                    <>
-                                        <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
-                                        {isDateField ? (
-                                            <input id={key} type="date" value={inputValue[sectionKey][key]}
-                                                   onChange={(e) => onChange(e, key)}/>
-                                        ) : isCheckbox ? (
-                                            <input id={key} type="checkbox" checked={inputValue[sectionKey][key]}
-                                                   onChange={(e) => onChange(e, key)}/>
-                                        ) : isTextArea ? (
-                                                <textarea id={key} value={inputValue[sectionKey][key]}
-                                                          placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                                          onChange={(e) => onChange(e, key)}></textarea>)
-                                            : isLanguage || isSkill ? (
-                                                    <>
-                                                        <button onClick={() => editContent(null, null, "add")}>Add New</button>
-                                                        {inputValue[sectionKey][key].map((item, index) => (
-                                                            editItem.index === index && editItem.value === item && state === "edit" ?
-                                                                (
-                                                                    <div key={index}>
-                                                                        <input
-                                                                            id={key}
-                                                                            type="text"
-                                                                            value={currentInput}
-                                                                            onChange={(e) => setCurrentInput(e.target.value)}
-                                                                        ></input>
-                                                                        <button
-                                                                            onClick={() => saveEdit(currentInput, key, index)}>Save
-                                                                        </button>
-                                                                        <button onClick={cancelEdit}>Cansel</button>
-                                                                    </div>
-                                                                )
-                                                                : (<div onClick={() => editContent(index, item, "edit")}>
-                                                                    <h4 key={item}>{item}</h4>
-                                                                    <button onClick={() => deleteContent(index, key)}>Delete
-                                                                    </button>
-                                                                </div>)
-                                                        ))}
-                                                        {state === "add" ? (
-                                                            <>
-                                                                <div key="additem">
-                                                                    <input
-                                                                        id="additem"
-                                                                        type="text"
-                                                                        value={currentInput}
-                                                                        onChange={(e) => setCurrentInput(e.target.value)}
-                                                                    ></input>
-                                                                    <button
-                                                                        onClick={() => AddNewContent(currentInput, key)}>Add
-                                                                    </button>
-                                                                    <button onClick={cancelEdit}>Cansel</button>
-                                                                </div>
-                                                            </>
-                                                        ) : null}
-                                                    </>)
-                                                : (
-                                                    <input
-                                                        id={key}
-                                                        type="text"
-                                                        value={inputValue[sectionKey][key]}
-                                                        placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                                        onChange={(e) => onChange(e, key)}
-                                                    />
-                                                )}
-                                    </>
-                                )}
-                            </>
-
-                        )
-                    }
+            {(sectionKey === "education" || sectionKey === "experience") ? (
+                inputValue[sectionKey].map((item, index) => (
+                    <div key={index}>
+                        {Object.keys(item).map((key) =>
+                            renderData(sectionKey, item, key, (e) => onChangeSection(inputValue[sectionKey], sectionKey, item, key, e), placeholders[sectionKey][key], meta)
+                        )}
+                    </div>
                 ))
-            }
-
+            ) : (
+                Object.keys(inputValue[sectionKey]).map((key) =>
+                    renderData(sectionKey, inputValue[sectionKey], key, (e) => onChange(e, key), placeholders[sectionKey][key], meta)
+                )
+            )}
         </>
-    )
+    );
 }
+
 
 function App() {
     const [inputValue, setInputValue] = useState({
