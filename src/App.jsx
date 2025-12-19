@@ -243,8 +243,7 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         const isTextArea = key === "personalSummary";
         const isLanguage = key === "languages";
         const isSkill = key === "skills";
-        const isEducation = sectionKey === "education";
-        const isExperience = sectionKey === "experience";
+       
 
         if (sectionKey === "education" && value.isActive && key === "dateTo") return null;
 
@@ -317,30 +316,6 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         }
 
 
-        if (isEducation || isExperience) {
-            return (
-                <>
-                    {
-                        editItem.value === value && sectionState === "edit" ? (
-                            <div key={value[key]}>
-                                <label htmlFor={key}>{placeholders}</label>
-                                <input
-                                    id={key}
-                                    type="text"
-                                    value={value[key]}
-                                    placeholder={"Write your " + placeholders.toLowerCase()}
-                                    onChange={onChange}
-                                />
-                            </div>
-                        ) : (
-                            <div>
-                                <h4>{value[key]}</h4>
-                            </div>
-                        )}
-                </>
-            )
-        }
-
         return (
             <>
                 <label htmlFor={key}>{placeholders}</label>
@@ -364,42 +339,67 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
                     <button onClick={() => editContent(null, null, "add", "setSectionState")}>Add New</button>
                 ) : null
             }
+            {sectionState === "add" ? (
+                <>
+                    {Object.keys(inputValue[sectionKey][0]).map((key) => {
+                        return (
+                            <>
+                                <div key={key}>
+                                    <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
+                                    <input
+                                        id={key}
+                                        type={meta[key] || "text"}
+                                        placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
+                                        onChange={onChange}
+                                    />
+                                </div>
+                            </>
+                        )
+                    })}
+                    <button onClick={() => AddNewContent(currentInput, key)}>Add</button>
+                    <button onClick={cancelEdit}>Cancel</button>
+                </>
+            ) : null}
             {(sectionKey === "education" || sectionKey === "experience") ? (
                 inputValue[sectionKey].map((item, index) => (
                     <>
                         <div onClick={() => editContent(index, item, "edit", "setSectionState")} key={index}>
-                            {Object.keys(item).map((key) =>
-                                renderData(sectionKey, item, key, (e) => onChangeSection(inputValue[sectionKey], sectionKey, item, key, e), placeholders[sectionKey][key], meta)
-                            )}
+                            {/*{Object.keys(item).map((key) =>*/}
+                            {/*    renderData(sectionKey, item, key, (e) => onChangeSection(inputValue[sectionKey], sectionKey, item, key, e), placeholders[sectionKey][key], meta)*/}
+                            {/*)}*/}
+
                             {sectionState === "none" ?
-                                (<button onClick={() => deleteContent(key)}>Delete</button>) : null
-                            }
+                                (<>
+                                    <div>
+                                        {Object.keys(item).map((key) =>
+                                            <h4>{item[key]}</h4>)}
+                                    </div>
+                                    <button onClick={() => deleteContent(key)}>Delete</button>
+
+                                </>) : null}
+
                         </div>
+                        {sectionState === "edit" ? (
+                            <>
+                                {Object.keys(item).map((key) =>
+                                    sectionState === "edit" && editItem.index === index ? (
+                                        <div key={item[key]}>
+                                            <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
+                                            <input
+                                                id={key}
+                                                type={meta[key] || "text"}
+                                                value={item[key]}
+                                                placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
+                                                onChange={(e) => onChangeSection(inputValue[sectionKey], sectionKey, item, key, e)}
+                                            />
+                                        </div>
+                                    ) : null)}
+                            </>
+                        ) : null}
                         {sectionState === "edit" && editItem.index === index ? (
                             <>
                                 <button onClick={() => saveEdit(currentInput, key)}>Save</button>
                                 <button onClick={cancelEdit}>Cancel</button>
-                            </>
-                        ) : null}
-                        {sectionState === "add" ? (
-                            <>
-                                {Object.keys(inputValue[sectionKey][0]).map((key) => {
-                                    return (
-                                        <>
-                                            <div key={key}>
-                                                <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
-                                                <input
-                                                    id={key}
-                                                    type="text"
-                                                    placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                                    onChange={onChange}
-                                                />
-                                                <button onClick={() => AddNewContent(currentInput, key)}>Add</button>
-                                                <button onClick={cancelEdit}>Cancel</button>
-                                            </div>
-                                        </>
-                                    )
-                                })}
                             </>
                         ) : null}
                     </>
