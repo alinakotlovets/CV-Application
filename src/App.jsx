@@ -178,7 +178,7 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
     }
 
     const [editItem, setEditItem] = useState({index: null, value: null});
-    const [state, setState] = useState({state: "none", edit: null});
+    const [state, setState] = useState({activeIndex: undefined, editItem: null})
     const [sectionState, setSectionState] = useState({
         education: "none",
         experience: "none"
@@ -192,7 +192,6 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
             const newState = { education: "none", experience: "none"};
             setSectionState(newState);
             setCurrentInputSection(null);
-            setState(state);
         }
         if (stateItem === "setSectionState") {
             const newState = { education: "none", experience: "none"};
@@ -200,26 +199,27 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
             setSectionState(newState);
             setCurrentInputSection({...value})
         }
-        setCurrentInput(state.state === "add" ? "" : value);
+        setCurrentInput(state === null ? "" : value);
     }
-
     const deleteContent = (index, key) => {
-        let newArr = [...inputValue[sectionKey][key]];
-        newArr.splice(index, 1);
-        const updatedSection = {...inputValue[sectionKey], [key]: newArr};
-        setInputValue({...inputValue, [sectionKey]: updatedSection});
-    }
-
-    const deleteContentSection = (index) => {
-        let newArr = [...inputValue[sectionKey]];
-        newArr.splice(index, 1);
-        const updatedSection = {...inputValue, [sectionKey]: newArr};
-        setInputValue(updatedSection);
+        let newArr;
+        let updatedSection;
+        if(key === null){
+            newArr = [...inputValue[sectionKey]];
+            newArr.splice(index, 1);
+            updatedSection = {...inputValue, [sectionKey]: newArr};
+            setInputValue(updatedSection);
+        } else {
+            newArr = [...inputValue[sectionKey][key]];
+            newArr.splice(index, 1);
+            updatedSection = {...inputValue[sectionKey], [key]: newArr};
+            setInputValue({...inputValue, [sectionKey]: updatedSection});
+        }
     }
 
     const cancelEdit = (sectionKey) => {
         if(sectionKey === "general"){
-            setState({state: "none", edit: null});
+            setState({activeIndex: undefined, editItem: null})
         }
         if(sectionKey !== "general"){
             setSectionState(sectionState => ({...sectionState, [sectionKey]: "none"}));
@@ -227,40 +227,38 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         setEditItem({index: null, value: null});
     }
 
-    const AddNewContent = (value, key) => {
-        let newArr = [...inputValue[sectionKey][key]];
-        newArr.push(value);
-        const updatedSection = {...inputValue[sectionKey], [key]: newArr};
-        setInputValue({...inputValue, [sectionKey]: updatedSection});
-        cancelEdit(sectionKey);
-    }
-
-    const AddNewContentSection = (value) => {
-        let newArr = [...inputValue[sectionKey]];
-        newArr.push(value);
-        const updatedSection = {...inputValue, [sectionKey]: newArr};
-        setInputValue(updatedSection);
-        cancelEdit(sectionKey);
-    }
-
     const saveEdit = (value, key, index) => {
-        let newArr = [...inputValue[sectionKey][key]];
-        newArr[index] = value;
-        const updatedSection = {...inputValue[sectionKey], [key]: newArr};
-        setInputValue({...inputValue, [sectionKey]: updatedSection});
+        let newArr;
+        let updatedSection;
+       if(key === null){
+           newArr = [...inputValue[sectionKey]];
+           if(index === null){
+               newArr.push(value)
+           } else{
+               newArr[index] = value;
+           }
+           updatedSection = {...inputValue, [sectionKey]: newArr};
+           setInputValue(updatedSection);
+       }
+       else{
+           newArr = [...inputValue[sectionKey][key]];
+           if(index === null){
+               newArr.push(value)
+           } else{
+               newArr[index] = value;
+           }
+           updatedSection = {...inputValue[sectionKey], [key]: newArr};
+           setInputValue({...inputValue, [sectionKey]: updatedSection});
+       }
         cancelEdit(sectionKey);
     }
 
-    const saveEdiSection = (value, index) => {
-        let newArr = [...inputValue[sectionKey]];
-        newArr[index] = value;
-        const updatedSection = {...inputValue, [sectionKey]: newArr};
-        setInputValue(updatedSection);
-        cancelEdit(sectionKey);
-    }
 
 
-
+    const isEndDateCurrent = (key, item) => {
+        if(!item) return false;
+        return  sectionKey === "education" && item.isActive && key === "dateTo";
+    };
 
     const meta = {
         DateOfBirth: "date",
@@ -270,6 +268,24 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         phoneNumber: "tel",
         email: "email",
     }
+
+    const sectionTemplate = {
+        education: { school: "", title: "", dateFrom: "", dateTo: "", isActive: false },
+        experience: { company: "", position: "", dateFrom: "", dateTo: "", tasks: "" }
+    };
+
+    const handleInputChange = (key, e, type="text") => {
+        const value = type === "checkbox" ? e.target.checked : e.target.value;
+        setCurrentInputSection(prev => ({ ...prev, [key]: value }));
+    };
+    const renderInput = ({keyName, value, type="text", onChange}) => (
+        <input
+            id={keyName || undefined}
+            type={type}
+            {...(type === "checkbox" ? {checked: value} : {value})}
+            onChange={onChange}
+        />
+    )
 
     const renderData = (sectionKey, value, key, onChange, placeholders, meta) => {
         const isTextArea = key === "personalSummary";
@@ -284,8 +300,8 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
                 <>
                     <label htmlFor={key}>{placeholders}</label>
                     <textarea
-                        id={key}
-                        value={value[key]}
+                        id={key || undefined}
+                        value={value[key] || ""}
                         placeholder={"Write your " + placeholders.toLowerCase()}
                         onChange={onChange}
                     />
@@ -293,55 +309,48 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
             );
         }
 
-        if (meta[key] === 'checkbox') {
-            return (
-                <>
-                    <label htmlFor={key}>{placeholders}</label>
-                    <input
-                        id={key}
-                        type={meta[key]}
-                        checked={value[key]}
-                        onChange={onChange}
-                    />
-                </>
-            );
-        }
 
         if (isLanguage || isSkill) {
             return (
                 <>
                     <label htmlFor={key}>{placeholders}</label>
-                    <button onClick={() => editContent(null, null, {state: "add", edit: key}, "setState")}>Add New
+                    <button onClick={() => {
+                        setState({activeIndex:null, editItem:key});
+                        editContent(null, null, state.activeIndex, "setState")
+                    }}>Add New
                     </button>
                     {value[key].map((item, index) => (
-                        editItem.index === index && editItem.value === item && state.state === "edit" ? (
-                            <div key={index}>
-                                <input
-                                    id={key}
-                                    type="text"
-                                    value={currentInput}
-                                    onChange={(e) => setCurrentInput(e.target.value)}
-                                />
+                        state.activeIndex === index && state.editItem === key ? (
+                            <div key={sectionKey + key + index}>
+
+                                {renderInput({
+                                    keyName: key,
+                                    value: currentInput,
+                                    type: meta[key] || "text",
+                                    onChange: (e) => setCurrentInput(e.target.value)
+                                })}
                                 <button onClick={() => saveEdit(currentInput, key, index)}>Save</button>
                                 <button onClick={() => cancelEdit(sectionKey)}>Cancel</button>
                             </div>
                         ) : (
-                            <div onClick={() => editContent(index, item, {state: "edit", edit: key}, "setState")}
-                                 key={item}>
+                            <div onClick={() => {
+                                setState({activeIndex:index, editItem:key});
+                                editContent(index, item, state.activeIndex, "setState")}}
+                                 key={sectionKey + key + index}>
                                 <h4>{item}</h4>
-                                <button onClick={() => deleteContent(index, key)}>Delete</button>
+                                <button onClick={(e) => {e.stopPropagation();  deleteContent(index, key)}}>Delete</button>
                             </div>
                         )
                     ))}
-                    {state.state === "add" && state.edit === key && (
-                        <div key={key}>
-                            <input
-                                id={key}
-                                type="text"
-                                value={currentInput}
-                                onChange={(e) => setCurrentInput(e.target.value)}
-                            />
-                            <button onClick={() => AddNewContent(currentInput, key)}>Add</button>
+                    {state.activeIndex === null && state.editItem === key &&(
+                        <div key={sectionKey + key}>
+                            {renderInput({
+                                keyName: key,
+                                value: currentInput,
+                                type: meta[key] || "text",
+                                onChange: (e) => setCurrentInput(e.target.value)
+                            })}
+                            <button onClick={() => saveEdit(currentInput, key, null)}>Add</button>
                             <button onClick={() => cancelEdit(sectionKey)}>Cancel</button>
                         </div>
                     )}
@@ -349,14 +358,13 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
             );
         }
 
-
         return (
             <>
                 <label htmlFor={key}>{placeholders}</label>
                 <input
-                    id={key}
+                    id={key || undefined}
                     type={meta[key] || "text"}
-                    value={value[key]}
+                    value={value[key] || ""}
                     placeholder={"Write your " + placeholders.toLowerCase()}
                     onChange={onChange}
                 />
@@ -364,72 +372,68 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
         );
     }
 
-
     return (
         <>
             <h1>{title}</h1>
             {
                 sectionKey === "education" || sectionKey === "experience" ? (
-                    <button onClick={() => editContent(null, null, {...sectionState, [sectionKey]: "add"},  "setSectionState")}>Add New</button>
+                    <button onClick={() => editContent(null, null, "add",  "setSectionState")}>Add New</button>
                 ) : null
             }
-            {sectionState[sectionKey] === "add" && sectionKey !== "general" && inputValue[sectionKey].length > 0 ? (
+            {sectionState[sectionKey] === "add" && sectionKey !== "general" ? (
                 <>
-                    {Object.keys(inputValue[sectionKey][0]).map((key) => {
+                    {Object.keys(sectionTemplate[sectionKey]).map((key) => {
                         return (
-                            <>
-                                <div key={key}>
+                            <> { isEndDateCurrent(key, currentInputSection) ? null :
+                                (<div key={sectionKey + key}>
                                     <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
-                                    <input
-                                        id={key}
-                                        type={meta[key] || "text"}
-                                        placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                        value={currentInputSection[key]}
-                                        onChange={(e) => setCurrentInputSection(currentInputSection => ({...currentInputSection, [key]: e.target.value}))}
-                                    />
-                                </div>
+                                    {renderInput({
+                                        keyName: key,
+                                        value: currentInputSection[key],
+                                        type: meta[key] || "text",
+                                        onChange: (e) => handleInputChange(key, e, meta[key])
+                                    })}
+                                </div>)}
                             </>
                         )
                     })}
-                    <button onClick={() => AddNewContentSection(currentInputSection)}>Add</button>
+                    <button onClick={() => saveEdit(currentInputSection, null, null)}>Add</button>
                     <button onClick={() => cancelEdit(sectionKey)}>Cancel</button>
                 </>
             ) : null}
             {(sectionKey === "education" || sectionKey === "experience") ? (
                 inputValue[sectionKey].map((item, index) => (
                     <>
-                        <div onClick={() => editContent(index, item, "edit", "setSectionState")} key={index}>
+                        <div onClick={() => editContent(index, item, "edit", "setSectionState")} key={sectionKey + index}>
 
                             {sectionState[sectionKey] === "none" ?
                                 (<>
                                     <div>
-                                        {Object.keys(item).map((key) =>
-                                            <h4>{item[key]}</h4>)}
+                                        {Object.keys(sectionTemplate[sectionKey]).map((key) => (
+                                            isEndDateCurrent(key,item) ? (<h4>Current</h4>) : (<h4>{item[key]}</h4>)
+                                        ))}
                                     </div>
-                                    <button onClick={(e) => {e.stopPropagation(); deleteContentSection(index);}}>Delete</button>
+                                    <button onClick={(e) => {e.stopPropagation(); deleteContent(index, null);}}>Delete</button>
                                 </>) : null}
 
                         </div>
-                        {sectionState[sectionKey] === "edit" ? (
-                            <>
-                                {Object.keys(item).map((key) =>
-                                    sectionState[sectionKey] === "edit" && editItem.index === index ? (
-                                        <div key={item[key]}>
-                                            <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
-                                            <input
-                                                id={key}
-                                                type={meta[key] || "text"}
-                                                placeholder={"Write your " + placeholders[sectionKey][key].toLowerCase()}
-                                                value={currentInputSection[key]}
-                                                onChange={(e) => setCurrentInputSection(currentInputSection => ({...currentInputSection, [key]: e.target.value}))}
-                                            />
-                                        </div>
-                                    ) : null)}
-                            </>
-                        ) : null}
+                        {sectionState[sectionKey] === "edit" && editItem.index === index && Object.keys(sectionTemplate[sectionKey]).map((key) => {
+                            if (isEndDateCurrent(key, currentInputSection)) return null;
+                            return (
+                                <div key={sectionKey + key + index}>
+                                    <label htmlFor={key}>{placeholders[sectionKey][key]}</label>
+                                    {renderInput({
+                                        keyName: item[key],
+                                        value: currentInputSection[key],
+                                        type: meta[key] || "text",
+                                        onChange: (e) => handleInputChange(key, e, meta[key])
+                                    })}
+                                </div>
+                            );
+                        })}
                         {sectionState[sectionKey] === "edit" && editItem.index === index ? (
                             <>
-                                <button onClick={() => saveEdiSection(currentInputSection, index)}>Save</button>
+                                <button onClick={() => saveEdit(currentInputSection, null, index)}>Save</button>
                                 <button onClick={() => cancelEdit(sectionKey)}>Cancel</button>
                             </>
                         ) : null}
@@ -535,5 +539,4 @@ function App() {
         </>
     )
 }
-
 export default App
