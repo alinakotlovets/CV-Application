@@ -1,0 +1,114 @@
+.cv-builder-preview{
+    background-color: var(--primary-clr);
+    padding: 45px 30px;
+    width: 100%;
+}
+
+.preview-content-box{
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    gap: 40px;
+}
+
+.preview-left-box{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 25px;
+}
+
+.preview-right-box{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 25px;
+}
+
+.contact-icon{
+    width: 20px;
+    height: 20px;
+}
+
+.underline-2px,
+.underline-1px{
+    text-align: start;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.underline-2px{
+    margin-bottom: 30px;
+}
+
+.underline-1px{
+    margin-bottom: 20px;
+}
+
+.underline-2px::after,
+.underline-1px::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 100%;
+    background-color: var(--black);
+}
+
+.underline-2px:after{
+    height: 2px;
+}
+
+.underline-1px::after{
+    height: 1px;
+}
+
+.preview-list{
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.preview-list-item{
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    text-align: start;
+    gap: 15px;
+}
+
+.preview-list-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: start;
+    align-items: start;
+    padding: 0 10px;
+    text-align: start;
+}
+
+
+.preview-list-grid-item{
+    position: relative;
+    display: inline-block;
+}
+
+.preview-list-grid-item::before{
+    content: "-";
+    position: absolute;
+    left: -10px;
+    bottom: 0;
+}
+
+
+
+.preview-section{
+    text-align: start;
+    width: 100%
+
+}

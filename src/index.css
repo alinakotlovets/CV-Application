@@ -1,16 +1,32 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    --black: hsla(0, 0%, 0%, 1);
+    --prussian-blue: hsla(221, 51%, 16%, 1);
+    --grey: hsla(0, 0%, 83%, 1);
+    --red: #DC3545;
+    --bg-color: #F9F9ED;
+    --primary-clr: #FFFFFF;
+    --secondary-clr: #0C2B4E;
+    --box-shadow: rgba(0, 0, 0, .16) 0px 1px 4px;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 16px;
+    --t-one-body: "Lato", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --t-one-heading: "Now", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --t-one-h4-h5: "Aileron", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --t-two-body: "DM sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --t-two-heading: "Neue Machina";
+    --t-two-h3: "Arimo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --t-name: 2rem;
+    --t-job: 1.5rem;
+    --t-subheading: 1.3rem;
+    --t-h4: 1rem;
+    --transform: 300ms ease-in-out;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+ }
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+*, *:before, *:after {
+  box-sizing: border-box;
+    margin: 0;
 }
 
 a {
@@ -28,6 +44,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  color: var(--black);
+  background-color: var(--bg-color);
 }
 
 h1 {
@@ -36,22 +54,39 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--prussian-blue);
+  color: var(--primary-clr);
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color var(--transform), color var(--transform), border var(--transform);
 }
 button:hover {
-  border-color: #646cff;
+  background-color: var(--primary-clr);
+  color: var(--black);
+  border: 1px solid var(--prussian-blue);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input{
+    height: 40px;
+    width: 400px;
+}
+
+textarea{
+    width: 400px;
+    height: 100px;
+}
+
+ul{
+    list-style: none;
 }
 
 @media (prefers-color-scheme: light) {

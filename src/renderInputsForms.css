@@ -1,0 +1,131 @@
+.cv-builder-forms{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cv-builder-forms-label-input-box{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.checkbox{
+    width: 20px;
+    height: 20px;
+}
+
+.cv-builder-forms-label-checkbox{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 15px;
+    margin: 15px 0 0;
+}
+
+
+.cv-builder-forms-section-box{
+    margin-top: 20px;
+}
+
+.cv-builder-forms-box,
+.cv-builder-forms-section-box{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 0;
+}
+
+.cv-builder-forms-box-item{
+    border: 1px solid var(--prussian-blue);
+    border-radius: var(--border-radius-sm);
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 185px;
+    height: 62px;
+    transition: scale var(--transform), box-shadov var(--transform);
+}
+
+.input-edit{
+    width: 185px !important;
+}
+
+.cv-builder-forms-edit-box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+.edit-form-btns-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 15px;
+}
+
+.margin-top-bottom-10px{
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+.cv-builder-forms-section-box-item-text-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.cv-builder-forms-box-item:focus,
+.cv-builder-forms-box-item:hover{
+    scale: 1.02;
+    box-shadow: var(--box-shadow);
+}
+
+
+.btn-sm{
+    padding: 0.4em 1em;
+}
+
+
+.btn-red-white{
+    background-color: var(--red);
+    color: var(--primary-clr);
+    transition: color var(--transform), background-color var(--transform), border var(--transform);
+}
+
+.btn-red-white:focus,
+.btn-red-white:hover{
+    background-color: var(--bg-color);
+    color: var(--red);
+    border: 1px solid var(--red);
+}
+
+.btn-white-red{
+    background-color: var(--bg-color);
+    color: var(--red);
+    border: 1px solid var(--red);
+    transition: color var(--transform), background-color var(--transform);
+}
+
+.btn-white-red:focus,
+.btn-white-red:hover{
+    background-color: var(--red);
+    color: var(--primary-clr);
+    border: 1px solid var(--red);
+}
+
+.margin-bottom-sm{
+    margin-bottom: 10px;
+}
