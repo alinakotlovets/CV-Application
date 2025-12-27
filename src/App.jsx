@@ -3,6 +3,7 @@ import './App.css'
 import Preview from "./preview.jsx";
 import ButtonsClearAddData from "./clearShowPreviewData.jsx";
 import SectionBox from "./renderInputsForms.jsx";
+import {useRef} from "react";
 
 
 function App() {
@@ -79,6 +80,9 @@ function App() {
     const onClick = (key) => {
         setCurrentSection(key);
     }
+
+    const cvRef = useRef(null)
+
     return (
         <div className="cv-builder-content">
             <div className="cv-builder-left-box">
@@ -94,8 +98,8 @@ function App() {
                         setInputValue={setInputValue}/>
             </div>
             <div className="cv-builder-right-box">
-            <ButtonsClearAddData setData={setInputValue}/>
-            <Preview data={inputValue} sectionKey={currentSection}/>
+            <ButtonsClearAddData cvRef={cvRef} setData={setInputValue}/>
+            <Preview data={inputValue} cvRef={cvRef} sectionKey={currentSection}/>
             </div>
         </div>
     )

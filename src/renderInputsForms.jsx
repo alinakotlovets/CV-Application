@@ -150,7 +150,7 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
                 <div className="margin-top-bottom-10px">
                     <div className="cv-builder-buttons-box">
                     <label htmlFor={key}>{placeholders}</label>
-                    <button onClick={() => {
+                    <button className="btn-white-blue" onClick={() => {
                         setState({activeIndex:null, editItem:key});
                         editContent(null, null, state.activeIndex, "setState")
                     }}>Add New
@@ -221,7 +221,7 @@ function SectionBox({title, sectionKey, inputValue, placeholders, setInputValue}
             <h1>{title}</h1>
             {
                 sectionKey === "education" || sectionKey === "experience" ? (
-                    <button onClick={() => editContent(null, null, "add",  "setSectionState")}>Add New</button>
+                    <button className="btn-white-blue" onClick={() => editContent(null, null, "add",  "setSectionState")}>Add New</button>
                 ) : null
             }
             </div>

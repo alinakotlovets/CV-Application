@@ -36,8 +36,9 @@
 .cv-builder-forms-section-box{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 20px;
     padding: 0;
+    margin-bottom: 15px;
 }
 
 .cv-builder-forms-box-item{
@@ -47,8 +48,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 185px;
-    height: 62px;
+    width: 190px;
+    min-height: 62px;
     transition: scale var(--transform), box-shadov var(--transform);
 }
 
@@ -128,4 +129,34 @@
 
 .margin-bottom-sm{
     margin-bottom: 10px;
+}
+
+.btn-white-blue{
+    background-color: var(--bg-color);
+    color: var(--prussian-blue);
+    border: 1px solid var(--prussian-blue);
+    transition: color var(--transform), background-color var(--transform);
+}
+
+.btn-white-blue:focus,
+.btn-white-blue:hover{
+    background-color: var(--prussian-blue);
+    color: var(--primary-clr);
+    border: 1px solid var(--prussian-blue);
+}
+
+
+@media screen and (max-width: 767.9px) {
+    .cv-builder-forms-box-item {
+        padding: 10px;
+        flex-direction: column;
+        width: 150px;
+        min-height: 80px;
+    }
+
+
+    .btn-sm{
+        padding: 0.3rem 0.8rem;
+    }
+
 }

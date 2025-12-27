@@ -112,3 +112,19 @@
     width: 100%
 
 }
+
+
+@media screen and (max-width: 767.9px) {
+    .preview-content-box {
+        flex-direction: column;
+    }
+
+    .preview-left-box {
+        width: 100%;
+    }
+
+    .preview-right-box {
+        width: 100%;
+    }
+
+}

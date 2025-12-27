@@ -3,7 +3,8 @@ import "./preview.css";
 import emailIcon from "./img/email.svg";
 import phoneIcon from "./img/phone.svg";
 import locationIcon from "./img/location.png";
-function Preview({data}) {
+
+function Preview({data, cvRef}) {
     const renderSchoolTitle = (edu) => {
         if (!edu.school && !edu.title) return null;
         return (
@@ -37,8 +38,8 @@ function Preview({data}) {
     }
 
     return (
-        <div className="cv-builder-preview">
-            <div className="underline-2px">
+        <div ref={cvRef} className="cv-builder-preview">
+        <div className="underline-2px">
                 <h1>{data.general.firstName} {data.general.lastName}</h1>
                 <h2>{data.general.jobPosition}</h2>
             </div>

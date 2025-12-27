@@ -10,11 +10,11 @@
 }
 
 .cv-builder-right-box{
-  min-width: 650px;
+  width: 650px;
 }
 
 .cv-builder-left-box{
-  min-width: 500px;
+  width: 500px;
 }
 
 .cv-builder-buttons-box{
@@ -30,4 +30,52 @@
   align-items: center;
   justify-content: center;
   gap: 30px;
+}
+
+@media screen and (max-width: 1199.9px) {
+  .cv-builder-content{
+    flex-direction: column;
+  }
+  .cv-builder-left-box,
+  .cv-builder-right-box{
+    margin-bottom: 30px;
+  }
+}
+
+
+@media screen and (max-width: 767.9px) {
+  #root{
+    padding: 1rem;
+  }
+
+  .cv-builder-content{
+    width: 100%;
+  }
+
+  .cv-builder-left-box{
+    width: 300px;
+  }
+
+  .cv-builder-right-box{
+    width: 300px;
+  }
+  input{
+    width: 275px;
+  }
+
+  textarea {
+    width: 275px;
+  }
+
+  .cv-builder-buttons-box{
+    gap: 15px;
+    padding: 0;
+  }
+
+  button{
+    font-size: 15px;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+  }
+
 }
