@@ -154,9 +154,16 @@
         min-height: 80px;
     }
 
-
     .btn-sm{
         padding: 0.3rem 0.8rem;
+    }
+
+    .input-edit {
+        width: 150px !important;
+    }
+
+    .edit-form-btns-box{
+        gap: 12px;
     }
 
 }
